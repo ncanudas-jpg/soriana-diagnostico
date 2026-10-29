@@ -92,7 +92,7 @@ kbd { font: inherit; font-size: .72em; padding: .05em .45em; border-radius: 6px;
 .nav { position: fixed; inset: 0 0 auto 0; z-index: 110; height: 52px; backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--card-line); }
 .nav-inner { max-width: 1440px; height: 100%; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 16px; }
 .brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-weight: 700; letter-spacing: -.02em; }
-.brand-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--soriana); }
+.brand-dot { width: 22px; height: 22px; background: url(../assets/soriana-icono.png) center / contain no-repeat; }
 .nav-links { list-style: none; margin: 0 auto; padding: 0; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
 .nav-links::-webkit-scrollbar { display: none; }
 .nav-links a { display: block; padding: 6px 12px; border-radius: 980px; font-size: .85rem; color: var(--text-2); text-decoration: none; white-space: nowrap; transition: color .2s, background .2s; }
@@ -135,11 +135,18 @@ kbd { font: inherit; font-size: .72em; padding: .05em .45em; border-radius: 6px;
 .b1 { width: 46vmax; height: 46vmax; left: -12vmax; top: -10vmax; background: var(--soriana); --k: .25; opacity: .28; }
 .b2 { width: 36vmax; height: 36vmax; right: -10vmax; top: 10vh; background: var(--chedraui); --k: .5; opacity: .24; }
 .b3 { width: 30vmax; height: 30vmax; left: 30%; bottom: -16vmax; background: #6e6e73; --k: .35; opacity: .2; }
-.logos { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 2.4rem; }
-.logo { display: inline-flex; align-items: center; gap: 10px; padding: 10px 20px; border-radius: 980px; background: var(--card); border: 1px solid var(--card-line); box-shadow: var(--shadow); font-weight: 700; letter-spacing: -.01em; }
+.logos { display: flex; gap: 18px 22px; flex-wrap: wrap; justify-content: center; align-items: center; margin-top: 2.6rem; }
+.logos-vs { color: var(--text-2); font-size: .95rem; }
+.logos-rest { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; }
+.logo { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 10px 20px; border-radius: 980px; background: var(--card); border: 1px solid var(--card-line); box-shadow: var(--shadow); font-weight: 700; letter-spacing: -.01em; }
 .logo::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--c); }
 .logo.has-img::before { display: none; }
-.logo img { height: 26px; width: auto; display: block; }
+.logo img { height: var(--h, 30px); width: auto; max-width: 150px; display: block; }
+.logo--main { gap: 16px; padding: 16px 38px 16px 26px; border: 2px solid var(--soriana); font-size: clamp(2rem, 4.4vw, 3rem); color: var(--soriana-text); letter-spacing: -.035em; box-shadow: 0 10px 40px rgba(228, 0, 43, .22), var(--shadow); }
+.logo--main::before { width: 18px; height: 18px; }
+.logo--main img { height: clamp(48px, 7vw, 72px); max-width: none; }
+.logo--main .lt { line-height: 1; }
+.logo--main.has-img .lt { display: inline; }
 .byline { margin: 2.2rem 0 0; color: var(--text-2); font-size: .95rem; max-width: 60ch; }
 .scroll-cue { position: absolute; bottom: 28px; left: 50%; width: 26px; height: 42px; margin-left: -13px; border: 2px solid var(--text-2); border-radius: 14px; opacity: .7; }
 .scroll-cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--text-2); animation: cue 1.8s infinite var(--ease); }
@@ -236,7 +243,9 @@ kbd { font: inherit; font-size: .72em; padding: .05em .45em; border-radius: 6px;
 /* ---------- Competidores ---------- */
 .comp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .comp { min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; border-top: 6px solid var(--c); }
-.comp .tk { display: inline-block; align-self: flex-start; font-weight: 700; font-size: .85rem; letter-spacing: .06em; padding: 5px 12px; border-radius: 980px; border: 1.5px solid var(--c); }
+.comp-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; }
+.comp-logo img { display: block; height: 44px; max-width: 150px; width: auto; }
+.comp .tk { display: inline-block; font-weight: 700; font-size: .85rem; letter-spacing: .06em; padding: 5px 12px; border-radius: 980px; border: 1.5px solid var(--c); }
 .comp h3 { font-size: 2rem; margin: 1.2rem 0 .4rem; }
 .comp p { margin: 0; color: var(--text-2); }
 

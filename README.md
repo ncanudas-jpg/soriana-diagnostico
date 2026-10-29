@@ -13,7 +13,7 @@ Sitio de presentación (estático, sin build) sobre Organización Soriana (BMV: 
 - **Autores, materia, profesor:** `SITE.meta` (materia, profesor e institución quedan vacíos; si los llenas, aparecen solos) en `js/data.js`.
 - **Cifras y razones:** `SITE.base` (estados financieros) y `SITE.razones` (tabla de 20 razones, `[2024, 2025]`).
 - **Metas del simulador y de la tabla de KPI:** `SITE.propuesta`.
-- **Logos:** copia el archivo a `assets/` y escribe su ruta en `SITE.logos[i].archivo` (ej. `'assets/soriana.svg'`). Vacío o con error de carga, se muestra el nombre en texto.
+- **Logos:** están en `assets/` y se configuran en `SITE.logos` (`archivo`, `principal` para el protagonista, `alto` en px). Si el archivo falta o no carga, se muestra el nombre en texto.
 
 ## Modo presentación
 Botón **Presentar** o tecla **P**. Flechas / espacio / clic para avanzar, **Shift+espacio** retrocede, **F** pantalla completa, **Esc** sale.

@@ -65,12 +65,19 @@
 
   /* ---------- logos con respaldo (nunca ícono roto) ---------- */
   function renderLogos(node) {
-    node.innerHTML = D.logos.map((l) => `<span class="logo" style="--c:${l.color}"><span class="lt">${esc(l.nombre)}</span></span>`).join('');
-    $$('.logo', node).forEach((span, i) => {
+    const main = D.logos.find((l) => l.principal), rest = D.logos.filter((l) => !l.principal);
+    const pill = (l) => `<span class="logo${l.principal ? ' logo--main' : ''}" style="--c:${l.color};${l.alto ? `--h:${l.alto}px` : ''}"><span class="lt">${esc(l.nombre)}</span></span>`;
+    node.innerHTML = `${pill(main)}<span class="logos-vs" aria-hidden="true">frente a</span><span class="logos-rest">${rest.map(pill).join('')}</span>`;
+    const els = $$('.logo', node);
+    [main, ...rest].forEach((l, i) => {
+      if (!l.archivo) return;
       const img = new Image();
-      img.alt = D.logos[i].nombre;
-      img.onload = () => { span.classList.add('has-img'); span.replaceChildren(img); };
-      if (D.logos[i].archivo) img.src = D.logos[i].archivo;
+      img.alt = l.principal ? '' : l.nombre;
+      img.onload = () => {
+        els[i].classList.add('has-img');
+        if (l.principal) els[i].prepend(img); else els[i].replaceChildren(img); // el principal conserva el nombre en texto
+      };
+      img.src = l.archivo;
     });
   }
 
@@ -205,7 +212,14 @@
   }
 
   function renderCompetidores() {
-    $('#competidores').innerHTML = D.competidores.map((c) => `<article class="card lift comp" style="--c:${c.color}"><span class="tk">BMV: ${esc(c.ticker)}</span><div><h3>${esc(c.nombre)}</h3><p>${esc(c.nota)}</p></div></article>`).join('');
+    const box = $('#competidores');
+    box.innerHTML = D.competidores.map((c) => `<article class="card lift comp" style="--c:${c.color}"><div class="comp-top"><span class="tk">BMV: ${esc(c.ticker)}</span><span class="comp-logo"></span></div><div><h3>${esc(c.nombre)}</h3><p>${esc(c.nota)}</p></div></article>`).join('');
+    $$('.comp-logo', box).forEach((slot, i) => {
+      const src = D.competidores[i].logo; if (!src) return;
+      const img = new Image(); img.alt = D.competidores[i].nombre;
+      img.onload = () => slot.appendChild(img);
+      img.src = src;
+    });
   }
 
   /* ==========================================================================

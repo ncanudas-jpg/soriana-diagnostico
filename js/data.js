@@ -16,12 +16,13 @@ window.SITE = {
     fecha: 'Octubre 2026'
   },
 
-  /* ---------- Logos: sube el archivo a assets/ y escribe su ruta en `archivo`
-     (ej. 'assets/soriana.svg'). Con `archivo: ''` o si falla la carga, se muestra el nombre en texto. ---------- */
+  /* ---------- Logos: archivo en assets/ y su ruta en `archivo`. `principal` = protagonista (grande, con texto);
+     `alto` = alto en px del logo secundario. Con `archivo: ''` o si falla la carga, se muestra el nombre en texto. ---------- */
   logos: [
-    { nombre: 'Soriana',  archivo: '',  color: '#E4002B' },
-    { nombre: 'Chedraui', archivo: '', color: '#F28C00' },
-    { nombre: 'Walmex',   archivo: '',   color: '#8e8e93' }
+    { nombre: 'Soriana',  archivo: 'assets/soriana-icono.png', color: '#E4002B', principal: true },
+    { nombre: 'Chedraui', archivo: 'assets/chedraui.png',      color: '#F28C00', alto: 50 },
+    { nombre: 'Walmex',   archivo: 'assets/walmex.svg',        color: '#8e8e93', alto: 40 },
+    { nombre: 'La Comer', archivo: 'assets/lacomer.png',       color: '#8e8e93', alto: 28 }
   ],
 
   /* ---------- Colores de datos ---------- */
@@ -117,9 +118,9 @@ window.SITE = {
 
   /* ---------- COMPETIDORES ---------- */
   competidores: [
-    { nombre: 'Walmart de México', ticker: 'WALMEX', nota: 'Empresa pública. Referencia local de la industria en este análisis.', color: '#8e8e93' },
-    { nombre: 'Chedraui', ticker: 'CHDRAUI', nota: 'Empresa pública. Es el comparable directo en las secciones financieras.', color: '#F28C00' },
-    { nombre: 'La Comer', ticker: 'LACOMER', nota: 'Empresa pública.', color: '#8e8e93' }
+    { nombre: 'Walmart de México', ticker: 'WALMEX', nota: 'Empresa pública. Referencia local de la industria en este análisis.', color: '#8e8e93', logo: 'assets/walmex.svg' },
+    { nombre: 'Chedraui', ticker: 'CHDRAUI', nota: 'Empresa pública. Es el comparable directo en las secciones financieras.', color: '#F28C00', logo: 'assets/chedraui.png' },
+    { nombre: 'La Comer', ticker: 'LACOMER', nota: 'Empresa pública.', color: '#8e8e93', logo: 'assets/lacomer.png' }
   ],
 
   /* ---------- BASE FINANCIERA (mdp) — hoja DATOS del Excel del equipo ---------- */
