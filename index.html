@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Soriana. Diagnóstico y estrategia.</title>
+  <meta name="description" content="Diagnóstico de mercado y financiero de Organización Soriana (BMV: SORIANAB) frente a Chedraui, con propuesta de mejora. Proyecto de Inteligencia de Negocios, Tec de Monterrey.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23E4002B'/%3E%3Ctext x='32' y='44' font-family='Arial' font-size='36' font-weight='700' text-anchor='middle' fill='white'%3ES%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip" href="#perfil">Saltar al contenido</a>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <header class="nav" id="nav">
+    <nav class="nav-inner" aria-label="Secciones">
+      <a class="brand" href="#inicio" aria-label="Soriana, inicio"><span class="brand-dot"></span><span class="brand-text">Soriana</span></a>
+      <ul class="nav-links" id="navLinks"></ul>
+      <div class="nav-actions">
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Cambiar entre modo claro y oscuro" title="Modo claro / oscuro">◐</button>
+        <button class="pill-btn" id="presentBtn" type="button" aria-pressed="false" title="Modo presentación (P)"><span aria-hidden="true">▶</span> Presentar <kbd>P</kbd></button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- 0. HERO -->
+    <section class="section" id="inicio" aria-label="Portada">
+      <div class="slide hero" data-slide="hero">
+        <div class="hero-bg" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i></div>
+        <div class="hero-inner">
+          <p class="eyebrow reveal" id="heroEyebrow"></p>
+          <h1 class="display reveal" id="heroTitle"></h1>
+          <p class="lead reveal" id="heroSub"></p>
+          <div class="logos reveal" id="heroLogos" aria-label="Empresas analizadas"></div>
+          <p class="byline reveal" id="heroBy"></p>
+        </div>
+        <a class="scroll-cue" href="#perfil" aria-label="Bajar al perfil"><span></span></a>
+      </div>
+    </section>
+
+    <!-- 1. PERFIL -->
+    <section class="section" id="perfil" aria-labelledby="h-perfil">
+      <div class="slide" data-slide="perfil">
+        <header class="slide-head" data-head="perfil"></header>
+        <div class="counters reveal" id="counters"></div>
+        <div class="tabs reveal" id="perfilTabs"></div>
+      </div>
+    </section>
+
+    <!-- 2. HALLAZGOS -->
+    <section class="section" id="hallazgos" aria-label="Hallazgos del diagnóstico">
+      <div class="slide" data-slide="pestel">
+        <header class="slide-head" data-head="pestel"></header>
+        <div class="pestel reveal" id="pestel"></div>
+      </div>
+      <div class="slide" data-slide="foda">
+        <header class="slide-head" data-head="foda"></header>
+        <div class="foda reveal" id="foda"></div>
+      </div>
+      <div class="slide" data-slide="tendencias">
+        <header class="slide-head" data-head="tendencias"></header>
+        <div class="carousel-wrap reveal">
+          <div class="carousel" id="carousel" tabindex="0" role="region" aria-label="Carrusel de tendencias"></div>
+          <div class="carousel-ctl">
+            <button class="icon-btn" id="carPrev" type="button" aria-label="Tendencia anterior">←</button>
+            <div class="car-dots" id="carDots"></div>
+            <button class="icon-btn" id="carNext" type="button" aria-label="Tendencia siguiente">→</button>
+          </div>
+        </div>
+      </div>
+      <div class="slide" data-slide="canvas">
+        <header class="slide-head" data-head="canvas"></header>
+        <div class="canvas-grid reveal" id="canvasGrid"></div>
+      </div>
+      <div class="slide" data-slide="competidores">
+        <header class="slide-head" data-head="competidores"></header>
+        <div class="comp-grid reveal" id="competidores"></div>
+      </div>
+    </section>
+
+    <!-- 3. CUANTITATIVO -->
+    <section class="section" id="cuantitativo" aria-label="Hallazgos cuantitativos" data-chapters></section>
+
+    <!-- 4. COMPARACIÓN -->
+    <section class="section" id="comparacion" aria-label="Comparación Soriana vs. Chedraui">
+      <div class="slide" data-slide="comparacion">
+        <header class="slide-head" data-head="comparacion"></header>
+        <div class="ctl-bar reveal" data-ctl></div>
+        <div class="verdict reveal" id="verdict" aria-live="polite"></div>
+        <div class="table-wrap reveal"><table class="ratios" id="ratioTable"></table></div>
+        <p class="footnote" id="cmpFoot"></p>
+      </div>
+      <div class="slide" data-slide="comparacion-visual">
+        <header class="slide-head slide-head--sm"><p class="kicker">04 · Soriana vs. Chedraui</p><h2 class="h2">Radar y barras lado a lado.</h2></header>
+        <div class="ctl-bar reveal" data-ctl></div>
+        <div class="cmp-charts">
+          <figure class="card chart-card reveal">
+            <figcaption><strong>Radar</strong> · % del tope de cada eje</figcaption>
+            <div class="chart-box"><canvas id="radarChart" role="img" aria-label="Radar de crecimiento, márgenes y ROE: Soriana frente a Chedraui"></canvas></div>
+            <p class="chart-note" id="radarNote"></p>
+          </figure>
+          <figure class="card chart-card reveal">
+            <figcaption><label for="barGroup"><strong>Barras</strong></label> <select id="barGroup" class="select"></select></figcaption>
+            <div class="chart-box"><canvas id="barChart" role="img" aria-label="Barras lado a lado de las razones seleccionadas"></canvas></div>
+          </figure>
+        </div>
+      </div>
+      <div class="slide" data-slide="comparacion-slider">
+        <header class="slide-head slide-head--sm"><p class="kicker">04 · Soriana vs. Chedraui</p><h2 class="h2">Compara la razón que tú elijas.</h2></header>
+        <div class="ctl-bar reveal" data-ctl></div>
+        <div class="card cmp-slider reveal" id="cmpSlider"></div>
+      </div>
+    </section>
+
+    <!-- 5. DASHBOARD -->
+    <section class="section" id="dashboard" aria-label="Dashboard de KPI">
+      <div class="slide" data-slide="dashboard">
+        <header class="slide-head" data-head="dashboard"></header>
+        <div class="ctl-bar reveal">
+          <div class="seg" role="radiogroup" aria-label="Empresa" id="dashCo"></div>
+          <div class="seg" role="radiogroup" aria-label="Año" id="dashYear"></div>
+        </div>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <p class="footnote" id="dashFoot"></p>
+      </div>
+    </section>
+
+    <!-- 6. PROPUESTA -->
+    <section class="section" id="propuesta" aria-label="Propuesta">
+      <div class="slide" data-slide="prop-bien">
+        <header class="slide-head" data-head="prop-bien"></header>
+        <div class="prop-grid good reveal" id="propBien"></div>
+      </div>
+      <div class="slide" data-slide="prop-mejora">
+        <header class="slide-head" data-head="prop-mejora"></header>
+        <div class="prop-grid opp reveal" id="propMejora"></div>
+      </div>
+      <div class="slide" data-slide="simulador">
+        <header class="slide-head" data-head="simulador"></header>
+        <div class="sim reveal" id="sim"></div>
+      </div>
+      <div class="slide" data-slide="roadmap">
+        <header class="slide-head" data-head="roadmap"></header>
+        <ol class="timeline reveal" id="timeline"></ol>
+        <div class="table-wrap reveal"><table class="ratios kpi-meta" id="metaTable"></table></div>
+        <p class="footnote" id="metaFoot"></p>
+      </div>
+    </section>
+
+    <!-- 7. CIERRE -->
+    <section class="section" id="cierre" aria-label="Cierre">
+      <div class="slide" data-slide="conclusion">
+        <header class="slide-head" data-head="conclusion"></header>
+        <div class="closing reveal" id="closing"></div>
+      </div>
+      <div class="slide" data-slide="fuentes">
+        <header class="slide-head" data-head="fuentes"></header>
+        <div class="sources reveal">
+          <ol id="sources"></ol>
+          <div class="credits" id="credits"></div>
+        </div>
+        <p class="footnote" id="closeFoot"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Detalle del Canvas -->
+  <dialog id="canvasDialog" class="dialog" aria-labelledby="dlgTitle">
+    <form method="dialog">
+      <p class="kicker">Modelo Canvas</p>
+      <h3 id="dlgTitle"></h3>
+      <ul id="dlgList"></ul>
+      <button class="pill-btn solid" value="close" autofocus>Cerrar</button>
+    </form>
+  </dialog>
+
+  <!-- Controles del modo presentación -->
+  <div class="pres-ui" id="presUI" hidden>
+    <button class="icon-btn" id="presPrev" type="button" aria-label="Diapositiva anterior">←</button>
+    <div class="pres-dots" id="presDots" role="tablist" aria-label="Diapositivas"></div>
+    <span class="pres-count" id="presCount" aria-live="polite"></span>
+    <button class="icon-btn" id="presNext" type="button" aria-label="Diapositiva siguiente">→</button>
+    <button class="icon-btn" id="presFull" type="button" aria-label="Pantalla completa (F)" title="Pantalla completa (F)">⛶</button>
+    <button class="icon-btn" id="presExit" type="button" aria-label="Salir de la presentación (Esc)" title="Salir (Esc)">✕</button>
+  </div>
+
+  <noscript><p style="padding:2rem;text-align:center">Este sitio necesita JavaScript para mostrar las gráficas interactivas.</p></noscript>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
