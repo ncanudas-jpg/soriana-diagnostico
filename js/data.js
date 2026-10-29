@@ -9,10 +9,10 @@ window.SITE = {
   meta: {
     titulo: 'Soriana. Diagnóstico y estrategia.',
     subtitulo: 'Un análisis de mercado y financiero de Organización Soriana (BMV: SORIANAB) frente a Chedraui, y una propuesta para volver a crecer con más eficiencia.',
-    autores: ['Nicolás Canudas Sagrero', '[Compañero 1]', '[Compañero 2]', '[Compañero 3]'],
-    materia: '[Materia]',
-    profesor: '[Profesor]',
-    institucion: 'Tecnológico de Monterrey · Inteligencia de Negocios',
+    autores: ['Nicolás Canudas Sagrero'],
+    materia: '',
+    profesor: '',
+    institucion: '',
     fecha: 'Octubre 2026'
   },
 

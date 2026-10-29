@@ -1,7 +1,6 @@
 # Soriana. Diagnóstico y estrategia.
 
 Sitio de presentación (estático, sin build) sobre Organización Soriana (BMV: SORIANAB) frente a Chedraui.
-Proyecto de Inteligencia de Negocios, Tec de Monterrey.
 
 ## Estructura
 - `index.html` — esqueleto de las secciones
@@ -11,7 +10,7 @@ Proyecto de Inteligencia de Negocios, Tec de Monterrey.
 - `assets/` — logos e imágenes opcionales
 
 ## Cómo editar
-- **Autores, materia, profesor:** `SITE.meta` en `js/data.js`.
+- **Autores, materia, profesor:** `SITE.meta` (materia, profesor e institución quedan vacíos; si los llenas, aparecen solos) en `js/data.js`.
 - **Cifras y razones:** `SITE.base` (estados financieros) y `SITE.razones` (tabla de 20 razones, `[2024, 2025]`).
 - **Metas del simulador y de la tabla de KPI:** `SITE.propuesta`.
 - **Logos:** copia el archivo a `assets/` y escribe su ruta en `SITE.logos[i].archivo` (ej. `'assets/soriana.svg'`). Vacío o con error de carga, se muestra el nombre en texto.
