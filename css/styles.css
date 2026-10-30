@@ -562,4 +562,46 @@ body.presenting .carousel-wrap { margin: 0 calc(-1 * max(20px, (100vw - 1240px) 
 .theme-green .tabs [role="tab"], .theme-red .tabs [role="tab"], .theme-green .tabset > .tablist [role="tab"], .theme-red .tabset > .tablist [role="tab"] { color: rgba(255, 255, 255, .88); }
 
 .kpi-grid > *, .prop-grid > *, .chapter-wrap > *, .diag-groups > *, .sim > * { min-width: 0; }
-@media (max-width: 700px) { .prop-grid, .kpi-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 700px) { .prop-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* ==========================================================================
+   v3 — tablero de Soriana
+   ========================================================================== */
+.ctl-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ctl-lbl { font-size: .82rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); }
+.seg button:disabled { opacity: .35; cursor: not-allowed; }
+.seg button[aria-checked="true"] { color: var(--verde-text); }
+.dboard { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.dk-strip { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.dk { display: grid; gap: 12px; padding: 22px; border-top: 5px solid var(--soriana); }
+.dk:nth-child(even) { border-top-color: var(--verde); }
+.dk .val::after { content: " mdp"; font-size: .36em; font-weight: 600; letter-spacing: 0; color: var(--text-2); }
+.spark-lbl .on { color: var(--text); font-weight: 700; }
+.dcard { margin: 0; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.dcard figcaption, .dg-head { display: grid; gap: 2px; }
+.dcard figcaption strong, .dg-head strong { font-size: 1.15rem; letter-spacing: -.02em; color: var(--text); }
+.dcard figcaption span, .dg-head span { font-size: .85rem; color: var(--text-2); }
+.dc7 { grid-column: span 7; }
+.dc5 { grid-column: span 5; }
+.dgauges { grid-row: span 2; }
+.chart-box.sm { height: 260px; min-height: 220px; }
+.grows { display: grid; gap: 16px; }
+.grow { display: grid; gap: 7px; padding-bottom: 14px; border-bottom: 1px solid var(--card-line); }
+.grow:last-child { border-bottom: 0; padding-bottom: 0; }
+.grow-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.gname { font-weight: 600; font-size: .95rem; flex: 1 1 8rem; }
+.gval { font-weight: 800; font-size: 1.2rem; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.grow .gauge-txt { font-size: .76rem; }
+@media (max-width: 1024px) {
+  .dk-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dc7, .dc5 { grid-column: 1 / -1; }
+  .dgauges { grid-row: auto; }
+}
+@media (max-width: 700px) {
+  .dk-strip { grid-template-columns: minmax(0, 1fr); }
+  .dcard { padding: 18px; }
+}
+
+.dk .val { font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 800; letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; }
+.dk h3 { font-size: .95rem; font-weight: 600; color: var(--text-2); letter-spacing: -.01em; }
+.dcard .chart-box.fill { flex: 1 1 auto; height: auto; min-height: 250px; }

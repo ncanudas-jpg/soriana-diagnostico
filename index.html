@@ -123,10 +123,10 @@
       <div class="slide theme-light" data-slide="dashboard">
         <header class="slide-head" data-head="dashboard"></header>
         <div class="ctl-bar reveal">
-          <div class="seg" role="radiogroup" aria-label="Empresa" id="dashCo"></div>
-          <div class="seg" role="radiogroup" aria-label="Año" id="dashYear"></div>
+          <div class="ctl-group"><span class="ctl-lbl" id="lblYear">Año</span><div class="seg" role="radiogroup" aria-labelledby="lblYear" id="dashYear"></div></div>
+          <div class="ctl-group"><span class="ctl-lbl" id="lblCmp">Comparar con</span><div class="seg" role="radiogroup" aria-labelledby="lblCmp" id="dashCmp"></div></div>
         </div>
-        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="dboard" id="dboard"></div>
         <p class="footnote" id="dashFoot"></p>
       </div>
     </section>

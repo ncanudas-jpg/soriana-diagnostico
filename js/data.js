@@ -47,7 +47,7 @@ window.SITE = {
     modelo:      { k: '03 · Cómo funciona', t: 'Su negocio y hacia dónde va.', s: 'Un vistazo al modelo Canvas y a las cinco tendencias que están moviendo el tablero.' },
     finanzas:    { k: '04 · Los números', t: 'Los números cuentan una historia.', s: 'Elige un tema y mira cómo se compara Soriana con su rival directo.' },
     duelo:       { k: '05 · El duelo', t: 'Soriana vs. Chedraui.', s: 'Veinte razones financieras, un solo rival. Chedraui (BMV: CHDRAUI) es el comparable directo. ¿Quién gana cada una?' },
-    dashboard:   { k: '06 · Tablero', t: 'Tu tablero de control.', s: 'Elige empresa y año. Cada tarjeta compara contra el año anterior y contra una referencia.' },
+    dashboard:   { k: '06 · Tablero', t: 'El tablero de Soriana.', s: 'Elige un año, compáralo con otro y mira qué tan cerca o lejos está de lo ideal.' },
     propuesta:   { k: '07 · Propuesta', t: 'Qué haríamos ahora.', s: 'Lo que hay que cuidar, dónde está la oportunidad y la ruta para lograrlo.' },
     simulador:   { k: '08 · Simulador', t: '¿Y si movemos las perillas?', s: 'Juega con inventario, margen y ventas y mira cuánto efectivo y EBITDA se liberan.' },
     cierre:      { k: '09 · Cierre', t: 'Lo que nos llevamos.', s: '' }
@@ -256,6 +256,28 @@ window.SITE = {
     { id: 'rdeuda', nombre: 'Razón de deuda', unit: 'pct', dec: 1, buena: 'bajo', min: 20, max: 80, ref: { tipo: 'rango', lo: 40, hi: 60, txt: 'Criterio general: 40% a 60%' } },
     { id: 'dneta', nombre: 'Deuda neta / EBITDA', unit: 'x', dec: 2, buena: 'bajo', min: -1, max: 4, ref: { tipo: 'umbral', v: 3, txt: 'Criterio general: menos de 3x' } }
   ],
+
+  /* ---------- TABLERO (solo Soriana) ---------- */
+  tablero: {
+    cabecera: [
+      { campo: 'ingresos', nombre: 'Ingresos' },
+      { campo: 'ebitda', nombre: 'EBITDA' },
+      { campo: 'utilidadNeta', nombre: 'Utilidad neta' },
+      { campo: 'efectivo', nombre: 'Efectivo y equivalentes' }
+    ],
+    titulos: { combo: 'Ingresos y utilidad neta', margenes: 'Márgenes vs. el ideal', ideal: 'Contra lo ideal', ciclo: 'Ciclo de efectivo (días)', estructura: 'Con qué se financia' },
+    subtitulos: {
+      combo: 'Barras: ingresos. Línea verde: utilidad neta. El año elegido va en rojo intenso.',
+      margenes: 'Líneas punteadas: el ideal (Walmex 2025).',
+      ideal: 'La marca vertical es el ideal; el punto, Soriana. Flechas: cambio contra el año de comparación.',
+      ciclo: 'Ciclo = días de cobro + días de inventario − días de pago.'
+    },
+    ideales: [
+      { key: 'mebitda', ref: 10.2, txt: 'Ideal EBITDA: Walmex 10.2%' },
+      { key: 'mneto', ref: 4.9, txt: 'Ideal neto: Walmex 4.9%' }
+    ],
+    nota: 'Cifras en millones de pesos (mdp) de los archivos del equipo. "Ideal" = Walmex 2025 (crecimiento y márgenes), Damodaran/NYU Stern (ROE, EE.UU.) o criterio general (regla práctica sin fuente específica); en días de inventario no hay dato sectorial y la referencia es Chedraui. El crecimiento de 2023 no se calcula porque falta 2022.'
+  },
 
   /* ---------- PROPUESTA ---------- */
   propuesta: {

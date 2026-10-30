@@ -49,6 +49,7 @@
 
   /* ---------- cálculo de KPI desde la base (hoja DATOS) ---------- */
   const calc = {
+    mop: (b, i) => (b.utilidadOperacion[i] / b.ingresos[i]) * 100,
     crec: (b, i) => (i > 0 ? (b.ingresos[i] / b.ingresos[i - 1] - 1) * 100 : null),
     mebitda: (b, i) => (b.ebitda[i] / b.ingresos[i]) * 100,
     mneto: (b, i) => (b.utilidadNeta[i] / b.ingresos[i]) * 100,
@@ -547,83 +548,148 @@
   }
 
   /* ==========================================================================
-     DASHBOARD
+     TABLERO (solo Soriana): año contra año y contra lo ideal
      ========================================================================== */
-  const dash = { co: 'soriana', yi: 2 }; // yi indexa D.anios (1 = 2024, 2 = 2025)
+  const dash = { yi: 2, ci: 1 }; // yi = año elegido, ci = año con el que se compara (índices de D.anios)
+  const SB = () => D.base.soriana;
+  const yearFill = () => D.anios.map((_, i) => (i === dash.yi ? C.soriana : i === dash.ci ? rgba(C.soriana, 0.45) : rgba('#8e8e93', 0.32)));
 
-  function renderDashControls() {
-    $('#dashCo').innerHTML = ['soriana', 'chedraui'].map((k) => `<button type="button" role="radio" data-co="${k}" aria-checked="${k === dash.co}">${CO[k].n}</button>`).join('');
-    $('#dashYear').innerHTML = [1, 2].map((i) => `<button type="button" role="radio" data-yi="${i}" aria-checked="${i === dash.yi}">${D.anios[i]}</button>`).join('');
-    $('#dashCo').addEventListener('click', (e) => { const b = e.target.closest('[data-co]'); if (b) { dash.co = b.dataset.co; paintDash(); } });
-    $('#dashYear').addEventListener('click', (e) => { const b = e.target.closest('[data-yi]'); if (b) { dash.yi = +b.dataset.yi; paintDash(); } });
-  }
-
-  function sparkSVG(vals, color) {
+  function sparkSVG(vals, color, hi) {
     const pts = vals.map((v, i) => (v == null ? null : [i, v])).filter(Boolean);
     const W = 200, H = 40, pad = 6;
     const xs = (i) => (vals.length === 1 ? W / 2 : (i / (vals.length - 1)) * (W - 2 * pad) + pad);
     const min = Math.min(...pts.map((p) => p[1])), max = Math.max(...pts.map((p) => p[1]));
     const ys = (v) => (max === min ? H / 2 : H - pad - ((v - min) / (max - min)) * (H - 2 * pad));
     const path = pts.map((p, k) => `${k ? 'L' : 'M'}${xs(p[0]).toFixed(1)} ${ys(p[1]).toFixed(1)}`).join(' ');
-    const last = pts[pts.length - 1];
-    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="--co:${color}" aria-hidden="true" focusable="false">${pts.length > 1 ? `<path class="line" vector-effect="non-scaling-stroke" d="${path}"/>` : ''}<path d="M${xs(last[0]).toFixed(1)} ${ys(last[1]).toFixed(1)}h0" stroke="${color}" stroke-width="10" stroke-linecap="round" vector-effect="non-scaling-stroke" fill="none"/></svg>`;
+    const dot = pts.find((p) => p[0] === hi) || pts[pts.length - 1];
+    return `<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="--co:${color}" aria-hidden="true" focusable="false">${pts.length > 1 ? `<path class="line" vector-effect="non-scaling-stroke" d="${path}"/>` : ''}<path d="M${xs(dot[0]).toFixed(1)} ${ys(dot[1]).toFixed(1)}h0" stroke="${color}" stroke-width="10" stroke-linecap="round" vector-effect="non-scaling-stroke" fill="none"/></svg>`;
   }
 
   function gaugeHTML(k, v, color, other) {
+    const f = (x) => fv(x, k.unit, k.dec);
+    if (v == null) return '<div class="gauge-txt"><span>Sin dato para este año (necesita el año previo)</span></div>';
     const ref = k.ref, span = k.max - k.min;
     const pos = (x) => clamp(((x - k.min) / span) * 100, 0, 100);
-    const f = (x) => fv(x, k.unit, k.dec);
     let marker = '', refTxt = '', good = null, status = '';
     if (ref.tipo === 'valor' || ref.tipo === 'umbral') {
       marker = `<i class="gauge-ref" style="left:${pos(ref.v)}%"></i>`;
       good = k.buena === 'alto' ? v >= ref.v : v <= ref.v;
-      refTxt = `${ref.txt}: ${f(ref.v)}`;
-      status = good ? (k.buena === 'alto' ? 'Por encima' : 'Por debajo') : (k.buena === 'alto' ? 'Por debajo' : 'Por encima');
+      refTxt = `Ideal · ${ref.txt}: ${f(ref.v)}`;
+      status = good ? (k.buena === 'alto' ? 'Supera el ideal' : 'Mejor que el ideal') : (k.buena === 'alto' ? 'Por debajo del ideal' : 'Por encima del ideal');
     } else if (ref.tipo === 'rango') {
       marker = `<i class="gauge-band" style="left:${pos(ref.lo)}%;width:${pos(ref.hi) - pos(ref.lo)}%"></i>`;
-      refTxt = ref.txt;
-      if (v >= ref.lo && v <= ref.hi) { good = true; status = 'Dentro del rango'; }
+      refTxt = `Ideal · ${ref.txt}`;
+      if (v >= ref.lo && v <= ref.hi) { good = true; status = 'Dentro del ideal'; }
       else if (v < ref.lo) { good = k.buena === 'bajo'; status = 'Por debajo del rango'; }
       else { good = k.buena === 'alto'; status = 'Por encima del rango'; }
     } else if (ref.tipo === 'par') {
       marker = `<i class="gauge-ref" style="left:${pos(other)}%"></i>`;
       good = k.buena === 'alto' ? v >= other : v <= other;
-      refTxt = `${CO[dash.co === 'soriana' ? 'chedraui' : 'soriana'].n}: ${f(other)}`;
-      status = good ? 'Mejor que la otra' : 'Peor que la otra';
+      refTxt = `Referencia · Chedraui: ${f(other)}`;
+      status = good ? 'Mejor que Chedraui' : 'Detrás de Chedraui';
     }
     return `<div class="gauge" style="--co:${color}"><div class="gauge-track" role="img" aria-label="${esc(k.nombre)}: ${f(v)}. ${esc(refTxt)}. ${esc(status)}">${marker}<i class="gauge-dot" style="left:${pos(v)}%"></i></div><div class="gauge-txt"><span>${esc(refTxt)}</span><b class="${good ? 'good' : 'bad'}">${esc(status)}</b></div></div>`;
   }
 
-  function paintDash() {
-    $$('#dashCo [data-co]').forEach((b) => b.setAttribute('aria-checked', b.dataset.co === dash.co));
-    $$('#dashYear [data-yi]').forEach((b) => b.setAttribute('aria-checked', +b.dataset.yi === dash.yi));
-    const color = CO[dash.co].c, other = dash.co === 'soriana' ? 'chedraui' : 'soriana';
-    const grid = $('#kpiGrid');
-    const first = !grid.children.length;
-    if (first) grid.innerHTML = D.kpis.map((k) => `<article class="card lift kpi" data-k="${k.id}" aria-label="${esc(k.nombre)}"><div class="kpi-top"><h3>${esc(k.nombre)}</h3><span class="delta"></span></div><div class="val" aria-live="polite"></div><div class="spark-wrap"></div><div class="gauge-wrap"></div></article>`).join('');
-    D.kpis.forEach((k) => {
-      const card = $(`[data-k="${k.id}"]`, grid);
-      const v = kpiValue(dash.co, k.id, dash.yi);
-      const prev = dash.yi > 0 ? kpiValue(dash.co, k.id, dash.yi - 1) : null;
-      const series = D.anios.slice(0, dash.yi + 1).map((_, i) => kpiValue(dash.co, k.id, i));
-      tween($('.val', card), v, (x) => fv(x, k.unit, k.dec), 800);
-      // variación
-      const dl = $('.delta', card);
-      if (prev == null) { dl.className = 'delta flat'; dl.textContent = '— sin dato previo'; }
-      else {
-        const diff = v - prev;
-        const up = diff > 0, flat = Math.abs(diff) < Math.pow(10, -k.dec) / 2;
-        const good = k.buena === 'alto' ? up : !up;
-        const unitTxt = k.unit === 'pct' ? ' pp' : k.unit === 'x' ? 'x' : ' d';
-        dl.className = 'delta ' + (flat ? 'flat' : good ? 'good' : 'bad');
-        dl.textContent = `${flat ? '▬' : up ? '▲' : '▼'} ${fmt(Math.abs(diff), k.dec)}${unitTxt}`;
-        dl.title = `Frente a ${D.anios[dash.yi - 1]}: ${fv(prev, k.unit, k.dec)}`;
-      }
-      const sv = series;
-      $('.spark-wrap', card).innerHTML = sparkSVG(sv, color) + `<div class="spark-lbl"><span>${D.anios[sv.findIndex((x) => x != null)]}: ${fv(sv.find((x) => x != null), k.unit, k.dec)}</span><span>${D.anios[dash.yi]}: ${fv(v, k.unit, k.dec)}</span></div>`;
-      $('.gauge-wrap', card).innerHTML = gaugeHTML(k, v, color, k.ref.tipo === 'par' ? kpiValue(other, k.id, dash.yi) : null);
+  function deltaChip(node, v, prev, buena, unit, dec, relative) {
+    if (v == null || prev == null) { node.className = 'delta flat'; node.textContent = '— sin dato previo'; node.removeAttribute('title'); return; }
+    const diff = relative ? (v / prev - 1) * 100 : v - prev;
+    const eps = relative ? 0.05 : Math.pow(10, -dec) / 2;
+    const flat = Math.abs(diff) < eps, up = diff > 0;
+    const good = buena === 'alto' ? up : !up;
+    const unitTxt = relative ? '%' : unit === 'pct' ? ' pp' : unit === 'x' ? 'x' : ' d';
+    node.className = 'delta ' + (flat ? 'flat' : good ? 'good' : 'bad');
+    node.textContent = `${flat ? '▬' : up ? '▲' : '▼'} ${fmt(Math.abs(diff), relative ? 1 : dec)}${unitTxt} vs ${D.anios[dash.ci]}`;
+    node.title = `Frente a ${D.anios[dash.ci]}: ${relative ? fmt(prev) : fv(prev, unit, dec)}`;
+  }
+
+  /* configuraciones de las gráficas del tablero */
+  function comboConfig() {
+    const b = SB(), o = baseOptions('mdp');
+    o.scales = {
+      x: { grid: { display: false }, border: { display: false } },
+      y: { beginAtZero: true, position: 'left', border: { display: false }, grid: { color: cssVar('--line') }, ticks: { callback: (v) => fmt(v) }, title: { display: true, text: 'Ingresos (mdp)' } },
+      y1: { beginAtZero: true, position: 'right', border: { display: false }, grid: { display: false }, ticks: { callback: (v) => fmt(v) }, title: { display: true, text: 'Utilidad neta (mdp)' } }
+    };
+    return { type: 'bar', data: { labels: D.anios.map(String), datasets: [
+      { type: 'bar', label: 'Ingresos (mdp)', data: b.ingresos, backgroundColor: yearFill(), borderRadius: 10, borderSkipped: false, maxBarThickness: 80, yAxisID: 'y' },
+      { type: 'line', label: 'Utilidad neta (mdp)', data: b.utilidadNeta, borderColor: C.verde, backgroundColor: C.verde, borderWidth: 3, tension: 0.3, pointRadius: (c) => (c.dataIndex === dash.yi ? 8 : 4), yAxisID: 'y1' }
+    ] }, options: o };
+  }
+  function margenConfig() {
+    const ids = [['mebitda', 'Margen EBITDA', C.soriana], ['mop', 'Margen operativo', C.verde], ['mneto', 'Margen neto', '#8a9400']];
+    const ds = ids.map(([id, label, col]) => ({ label, data: D.anios.map((_, i) => kpiValue('soriana', id, i)), borderColor: col, backgroundColor: col, borderWidth: 3, tension: 0.3, pointRadius: (c) => (c.dataIndex === dash.yi ? 8 : 4) }));
+    D.tablero.ideales.forEach((x) => { const col = ids.find((q) => q[0] === x.key)[2]; ds.push({ label: x.txt, data: D.anios.map(() => x.ref), borderColor: rgba(col, 0.55), backgroundColor: 'transparent', borderDash: [7, 6], borderWidth: 2, pointRadius: 0, tension: 0 }); });
+    return { type: 'line', data: { labels: D.anios.map(String), datasets: ds }, options: baseOptions('pct') };
+  }
+  function cicloConfig() {
+    const f = (i) => ['dso', 'dio', 'dpo', 'ccc'].map((id) => kpiValue('soriana', id, i));
+    const datasets = [bar(`${D.anios[dash.yi]}`, f(dash.yi), C.soriana)];
+    if (dash.ci != null) datasets.unshift(bar(`${D.anios[dash.ci]}`, f(dash.ci), rgba(C.soriana, 0.4)));
+    return { type: 'bar', data: { labels: ['Cobro a clientes', 'Inventario', 'Pago a proveedores', 'Ciclo de efectivo'].map((s) => wrapLabel(s, 14)), datasets }, options: baseOptions('dias') };
+  }
+  function estrConfig() {
+    const b = SB(), at = (i) => [b.pasivoTotal[i], b.capital[i]];
+    const mk = (i, a) => ({ label: String(D.anios[i]), data: at(i), backgroundColor: [rgba(C.soriana, a), rgba(C.verde, a)], borderColor: cssVar('--card'), borderWidth: 3 });
+    return { type: 'doughnut', data: { labels: ['Pasivos', 'Capital contable'], datasets: [mk(dash.ci, 0.42), mk(dash.yi, 1)] }, options: {
+      responsive: true, maintainAspectRatio: false, animation: animOpt(), cutout: '42%',
+      plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8, boxHeight: 8, padding: 16 } },
+        tooltip: { padding: 12, cornerRadius: 12, callbacks: { label: (c) => { const tot = c.dataset.data.reduce((x, y) => x + y, 0); return ` ${c.dataset.label} · ${c.label}: ${fmt(c.parsed)} mdp (${fmt((c.parsed / tot) * 100, 1)}%)`; } } } }
+    } };
+  }
+
+  function renderDashboard() {
+    const T = D.tablero;
+    $('#dboard').innerHTML = `
+      <div class="dk-strip" id="dkStrip"></div>
+      <figure class="card dcard dc7"><figcaption><strong>${esc(T.titulos.combo)}</strong><span>${esc(T.subtitulos.combo)}</span></figcaption><div class="chart-box sm"><canvas id="dCombo" role="img" aria-label="Ingresos y utilidad neta de Soriana por año"></canvas></div></figure>
+      <figure class="card dcard dc5"><figcaption><strong>${esc(T.titulos.margenes)}</strong><span>${esc(T.subtitulos.margenes)}</span></figcaption><div class="chart-box sm"><canvas id="dMargen" role="img" aria-label="Márgenes de Soriana por año contra el ideal"></canvas></div></figure>
+      <div class="card dcard dc5 dgauges"><div class="dg-head"><strong>${esc(T.titulos.ideal)}</strong><span>${esc(T.subtitulos.ideal)}</span></div><div class="grows" id="dGauges"></div></div>
+      <figure class="card dcard dc7"><figcaption><strong>${esc(T.titulos.ciclo)}</strong><span>${esc(T.subtitulos.ciclo)}</span></figcaption><div class="chart-box sm fill"><canvas id="dCiclo" role="img" aria-label="Días de cobro, inventario, pago y ciclo de efectivo"></canvas></div></figure>
+      <figure class="card dcard dc7"><figcaption><strong>${esc(T.titulos.estructura)}</strong><span id="dEstrCap"></span></figcaption><div class="chart-box sm fill"><canvas id="dEstr" role="img" aria-label="Pasivos y capital contable de Soriana"></canvas></div></figure>`;
+    registerChart('d-combo', $('#dCombo'), comboConfig);
+    registerChart('d-margen', $('#dMargen'), margenConfig);
+    registerChart('d-ciclo', $('#dCiclo'), cicloConfig);
+    registerChart('d-estr', $('#dEstr'), estrConfig);
+
+    const yrBtn = (attr, i, on, dis) => `<button type="button" role="radio" data-${attr}="${i}" aria-checked="${on}"${dis ? ' disabled' : ''}>${D.anios[i]}</button>`;
+    $('#dashYear').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-yi]'); if (!b) return;
+      dash.yi = +b.dataset.yi;
+      if (dash.ci === dash.yi) dash.ci = dash.yi > 0 ? dash.yi - 1 : 1; // el año de comparación no puede ser el mismo
+      paintDash();
     });
-    $('#dashFoot').textContent = `Referencias: Walmex 2025 (B×+, 4T25) y Damodaran/NYU Stern (abarrotes EE.UU., ene-2026). "Criterio general" = regla práctica sin fuente específica. Variación en puntos porcentuales (pp), veces (x) o días (d). ${D.comparacionNotas.datos}`;
+    $('#dashCmp').addEventListener('click', (e) => { const b = e.target.closest('[data-ci]'); if (b && !b.disabled) { dash.ci = +b.dataset.ci; paintDash(); } });
+    renderDashboard.btn = yrBtn;
+    $('#dashFoot').textContent = T.nota;
+    paintDash();
+  }
+
+  function paintDash() {
+    const T = D.tablero, b = SB(), btn = renderDashboard.btn, yi = dash.yi, ci = dash.ci;
+    $('#dashYear').innerHTML = D.anios.map((_, i) => btn('yi', i, i === yi, false)).join('');
+    $('#dashCmp').innerHTML = D.anios.map((_, i) => btn('ci', i, i === ci, i === yi)).join('');
+
+    // tarjetas de cabecera
+    const strip = $('#dkStrip');
+    if (!strip.children.length) strip.innerHTML = T.cabecera.map((k) => `<article class="card lift dk" data-f="${k.campo}"><div class="kpi-top"><h3>${esc(k.nombre)}</h3><span class="delta"></span></div><div class="val"></div><div class="spark-wrap"></div></article>`).join('');
+    T.cabecera.forEach((k) => {
+      const card = $(`[data-f="${k.campo}"]`, strip), series = b[k.campo];
+      tween($('.val', card), series[yi], (x) => fmt(Math.round(x)), 800);
+      deltaChip($('.delta', card), series[yi], series[ci], 'alto', 'mdp', 0, true);
+      $('.spark-wrap', card).innerHTML = sparkSVG(series, C.soriana, yi) + `<div class="spark-lbl">${D.anios.map((a, i) => `<span${i === yi ? ' class="on"' : ''}>${a}</span>`).join('')}</div>`;
+    });
+
+    // medidores contra lo ideal
+    $('#dGauges').innerHTML = D.kpis.map((k) => {
+      const v = kpiValue('soriana', k.id, yi), prev = kpiValue('soriana', k.id, ci);
+      const other = k.ref.tipo === 'par' ? kpiValue('chedraui', k.id, yi) : null;
+      return `<div class="grow"><div class="grow-top"><span class="gname">${esc(k.nombre)}</span><span class="gval">${v == null ? 'n/d' : fv(v, k.unit, k.dec)}</span><span class="delta" data-k="${k.id}"></span></div>${gaugeHTML(k, v, C.soriana, other)}</div>`;
+    }).join('');
+    D.kpis.forEach((k) => deltaChip($(`#dGauges [data-k="${k.id}"]`), kpiValue('soriana', k.id, yi), kpiValue('soriana', k.id, ci), k.buena, k.unit, k.dec, false));
+
+    $('#dEstrCap').textContent = `Anillo exterior: ${D.anios[ci]} · interior: ${D.anios[yi]}`;
+    ['d-combo', 'd-margen', 'd-ciclo', 'd-estr'].forEach(refreshChart);
   }
 
   /* ==========================================================================
@@ -849,7 +915,7 @@
   function init() {
     renderNav(); renderHero(); renderHeads(); renderPerfil(); renderDiag(); renderModelo();
     themeChart();
-    renderFinanzas(); renderComparacion(); renderDashControls(); paintDash(); renderPropuesta(); renderCierre();
+    renderFinanzas(); renderComparacion(); renderDashboard(); renderPropuesta(); renderCierre();
     setupTheme(); setupPresentation(); setupScroll();
   }
   init();
