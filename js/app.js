@@ -103,7 +103,8 @@
     $('#heroTitle').innerHTML = `${esc(a)}.<em>${esc(rest.join('. '))}</em>`;
     $('#heroSub').textContent = D.meta.subtitulo;
     renderLogos($('#heroLogos'));
-    $('#heroBy').textContent = [D.meta.autores.join(' · '), D.meta.materia, D.meta.profesor, D.meta.institucion].filter(Boolean).join(' · ');
+    const by = [D.meta.autores.join(' · '), D.meta.materia, D.meta.profesor, D.meta.institucion].filter(Boolean).join(' · ');
+    $('#heroBy').textContent = by; $('#heroBy').hidden = !by;
   }
 
   /* ---------- perfil ---------- */
@@ -772,7 +773,7 @@
     const c = D.cierre;
     $('#closing').innerHTML = `<p class="quote">${esc(c.lema)}</p><div class="paras">${c.conclusion.map((p) => `<p>${esc(p)}</p>`).join('')}</div>`;
     $('#sources').innerHTML = c.fuentes.map((f) => `<li>${f.u ? `<a href="${esc(f.u)}" target="_blank" rel="noopener noreferrer">${esc(f.t)}</a>` : esc(f.t)}</li>`).join('');
-    $('#credits').innerHTML = `<h3>Créditos</h3><p class="names">${D.meta.autores.map(esc).join('<br>')}</p>${[[D.meta.materia, D.meta.profesor], [D.meta.institucion], [D.meta.fecha]].map((l) => l.filter(Boolean).join(' · ')).filter(Boolean).map((t) => `<p>${esc(t)}</p>`).join('')}`;
+    $('#credits').innerHTML = `<h3>Créditos</h3>${D.meta.autores.length ? `<p class="names">${D.meta.autores.map(esc).join('<br>')}</p>` : ''}${[[D.meta.materia, D.meta.profesor], [D.meta.institucion], [D.meta.fecha]].map((l) => l.filter(Boolean).join(' · ')).filter(Boolean).map((t) => `<p>${esc(t)}</p>`).join('')}`;
     $('#closeFoot').textContent = c.nota;
   }
 

@@ -9,7 +9,7 @@ window.SITE = {
   meta: {
     titulo: 'Soriana. Diagnóstico y estrategia.',
     subtitulo: 'La radiografía de Organización Soriana (BMV: SORIANAB) contra su rival directo, Chedraui, y un plan para volver a crecer con más eficiencia. Toca, juega y descubre.',
-    autores: ['Nicolás Canudas Sagrero'],
+    autores: [],
     materia: '',
     profesor: '',
     institucion: '',
