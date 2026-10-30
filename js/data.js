@@ -8,7 +8,7 @@ window.SITE = {
   /* ---------- Portada y créditos (editables) ---------- */
   meta: {
     titulo: 'Soriana. Diagnóstico y estrategia.',
-    subtitulo: 'Un análisis de mercado y financiero de Organización Soriana (BMV: SORIANAB) frente a Chedraui, y una propuesta para volver a crecer con más eficiencia.',
+    subtitulo: 'La radiografía de Organización Soriana (BMV: SORIANAB) contra su rival directo, Chedraui, y un plan para volver a crecer con más eficiencia. Toca, juega y descubre.',
     autores: ['Nicolás Canudas Sagrero'],
     materia: '',
     profesor: '',
@@ -20,42 +20,37 @@ window.SITE = {
      `alto` = alto en px del logo secundario. Con `archivo: ''` o si falla la carga, se muestra el nombre en texto. ---------- */
   logos: [
     { nombre: 'Soriana',  archivo: 'assets/soriana-icono.png', color: '#E4002B', principal: true },
-    { nombre: 'Chedraui', archivo: 'assets/chedraui.png',      color: '#F28C00', alto: 50 },
-    { nombre: 'Walmex',   archivo: 'assets/walmex.svg',        color: '#8e8e93', alto: 40 },
-    { nombre: 'La Comer', archivo: 'assets/lacomer.png',       color: '#8e8e93', alto: 28 }
+    { nombre: 'Chedraui', archivo: 'assets/chedraui.png',      color: '#F28C00', alto: 56 }
   ],
 
   /* ---------- Colores de datos ---------- */
-  colores: { soriana: '#E4002B', chedraui: '#F28C00', ref: '#8e8e93' },
+  colores: { soriana: '#E4002B', chedraui: '#F28C00', ref: '#8e8e93', verde: '#006C32', lima: '#B6BF00' },
 
   /* ---------- Navegación ---------- */
   nav: [
     { id: 'inicio', texto: 'Inicio' },
     { id: 'perfil', texto: 'Perfil' },
-    { id: 'hallazgos', texto: 'Hallazgos' },
-    { id: 'cuantitativo', texto: 'Finanzas' },
-    { id: 'comparacion', texto: 'Comparación' },
+    { id: 'diagnostico', texto: 'Diagnóstico' },
+    { id: 'modelo', texto: 'Modelo' },
+    { id: 'finanzas', texto: 'Finanzas' },
+    { id: 'duelo', texto: 'Duelo' },
     { id: 'dashboard', texto: 'Dashboard' },
     { id: 'propuesta', texto: 'Propuesta' },
+    { id: 'simulador', texto: 'Simulador' },
     { id: 'cierre', texto: 'Cierre' }
   ],
 
   /* ---------- Encabezados de cada diapositiva ---------- */
   heads: {
-    perfil:       { k: '01 · Perfil', t: 'Una cadena nacional con más de 50 años de historia.', s: 'Empresa mexicana de retail fundada en 1968 en Torreón, Coahuila, con oficinas corporativas en Monterrey.' },
-    pestel:       { k: '02 · Hallazgos del diagnóstico', t: 'PESTEL', s: 'Seis factores del entorno. Toca una tarjeta para ver la situación y su impacto para Soriana.' },
-    foda:         { k: '02 · Hallazgos del diagnóstico', t: 'FODA', s: 'Toca una letra para desplegar su lista.' },
-    tendencias:   { k: '02 · Hallazgos del diagnóstico', t: 'Cinco tendencias', s: 'Desliza para recorrerlas.' },
-    canvas:       { k: '02 · Hallazgos del diagnóstico', t: 'Modelo Canvas', s: 'Nueve bloques. Toca uno para abrir el detalle.' },
-    competidores: { k: '02 · Hallazgos del diagnóstico', t: 'Competidores', s: 'Tres empresas públicas del autoservicio mexicano.' },
-    comparacion:  { k: '04 · Soriana vs. Chedraui', t: 'Veinte razones, un ganador por cada una.', s: 'Elige el año. Activa la referencia de industria para ver dónde queda cada una frente a Walmex y Damodaran.' },
-    dashboard:    { k: '05 · Dashboard', t: 'Los nueve KPI, a tu medida.', s: 'Elige empresa y año. Cada tarjeta compara contra el año anterior y contra una referencia.' },
-    'prop-bien':  { k: '06 · Propuesta', t: 'Seguir haciendo bien.', s: 'Cinco fortalezas que conviene proteger.' },
-    'prop-mejora':{ k: '06 · Propuesta', t: 'Oportunidades de mejora.', s: 'Cinco frentes donde está el mayor potencial.' },
-    simulador:    { k: '06 · Propuesta', t: 'Simulador de impacto.', s: 'Mueve los deslizadores y mira cuánto efectivo y EBITDA se liberan.' },
-    roadmap:      { k: '06 · Propuesta', t: 'Ruta a 24 meses.', s: 'Tres etapas y cinco KPI con metas ilustrativas.' },
-    conclusion:   { k: '07 · Cierre', t: 'Conclusión.', s: '' },
-    fuentes:      { k: '07 · Cierre', t: 'Fuentes y créditos.', s: '' }
+    perfil:      { k: '01 · Conócela', t: 'Soriana, de Torreón para todo México.', s: 'Más de 50 años llenando carritos. Toca las pestañas para saber qué la mueve.' },
+    diagnostico: { k: '02 · Radiografía', t: 'El diagnóstico en diez toques.', s: 'Toca una letra y descubre qué pasa en su entorno (PESTEL) y por dentro (FODA).' },
+    modelo:      { k: '03 · Cómo funciona', t: 'Su negocio y hacia dónde va.', s: 'Un vistazo al modelo Canvas y a las cinco tendencias que están moviendo el tablero.' },
+    finanzas:    { k: '04 · Los números', t: 'Los números cuentan una historia.', s: 'Elige un tema y mira cómo se compara Soriana con su rival directo.' },
+    duelo:       { k: '05 · El duelo', t: 'Soriana vs. Chedraui.', s: 'Veinte razones financieras, un solo rival. Chedraui (BMV: CHDRAUI) es el comparable directo. ¿Quién gana cada una?' },
+    dashboard:   { k: '06 · Tablero', t: 'Tu tablero de control.', s: 'Elige empresa y año. Cada tarjeta compara contra el año anterior y contra una referencia.' },
+    propuesta:   { k: '07 · Propuesta', t: 'Qué haríamos ahora.', s: 'Lo que hay que cuidar, dónde está la oportunidad y la ruta para lograrlo.' },
+    simulador:   { k: '08 · Simulador', t: '¿Y si movemos las perillas?', s: 'Juega con inventario, margen y ventas y mira cuánto efectivo y EBITDA se liberan.' },
+    cierre:      { k: '09 · Cierre', t: 'Lo que nos llevamos.', s: '' }
   },
 
   /* ---------- PERFIL ---------- */
@@ -116,12 +111,8 @@ window.SITE = {
     { id: 'ingresos', titulo: 'Fuentes de ingresos', items: ['Venta en tiendas', 'E-commerce', 'Membresías City Club', 'Marcas propias', 'Servicios complementarios (recargas, pagos)', 'Promociones y alianzas comerciales'] }
   ],
 
-  /* ---------- COMPETIDORES ---------- */
-  competidores: [
-    { nombre: 'Walmart de México', ticker: 'WALMEX', nota: 'Empresa pública. Referencia local de la industria en este análisis.', color: '#8e8e93', logo: 'assets/walmex.svg' },
-    { nombre: 'Chedraui', ticker: 'CHDRAUI', nota: 'Empresa pública. Es el comparable directo en las secciones financieras.', color: '#F28C00', logo: 'assets/chedraui.png' },
-    { nombre: 'La Comer', ticker: 'LACOMER', nota: 'Empresa pública.', color: '#8e8e93', logo: 'assets/lacomer.png' }
-  ],
+  /* ---------- RIVAL (único competidor analizado) ---------- */
+  rival: { nombre: 'Chedraui', ticker: 'CHDRAUI', nota: 'Empresa pública. Es el comparable directo en todo el análisis financiero.' },
 
   /* ---------- BASE FINANCIERA (mdp) — hoja DATOS del Excel del equipo ---------- */
   anios: [2023, 2024, 2025],
@@ -307,12 +298,20 @@ window.SITE = {
     }
   },
 
+  /* ---------- Textos de interfaz (pestañas, juego) ---------- */
+  ui: {
+    modeloTabs: [{ id: 'canvas', label: 'Modelo Canvas' }, { id: 'tendencias', label: 'Cinco tendencias' }],
+    dueloTabs: [{ id: 'tabla', label: 'Tabla' }, { id: 'radar', label: 'Radar' }, { id: 'barras', label: 'Barras' }, { id: 'cara', label: 'Cara a cara' }, { id: 'juego', label: '¿Adivinas?' }],
+    propTabs: [{ id: 'bien', label: 'Seguir haciendo bien' }, { id: 'mejora', label: 'Oportunidades' }, { id: 'ruta', label: 'Ruta a 24 meses' }],
+    juego: { ids: ['crec', 'mebitda', 'dio', 'roe', 'circ', 'rdeuda'], anio: 2025 }
+  },
+
   /* ---------- CIERRE ---------- */
   cierre: {
     conclusion: [
-      'Soriana tiene el balance más sólido: razón circulante de 1.24, 54% de sus activos financiados con capital propio y deuda muy baja sin arrendamientos (0.2x EBITDA). Pero su operación pierde fuerza: ventas -0.9%, margen EBITDA de 6.8% (a la baja), inventario de 84 días y un ROE de solo 3.9%. Su reto es vender más y mover más rápido la mercancía.',
-      'Chedraui está mejor posicionada en lo operativo: crece (+4.8%), tiene mayor margen EBITDA (8.4%), rota su inventario 10 veces al año y su ciclo de efectivo es negativo (-10 días). Su punto débil es el balance: razón circulante de 0.92 y pasivos de 67% de los activos, con una parte grande en arrendamientos.',
-      'Ninguna de las dos alcanza a Walmex (margen EBITDA de 10.2% y margen neto de 4.9%). Ambas operan con márgenes netos cercanos a 2%, por lo que cualquier alza de costos o caída del consumo les pega rápido. La oportunidad de Soriana: usar la solidez de su balance para mejorar la operación, empezando por el inventario.'
+      'Soriana tiene el balance más fuerte: razón circulante de 1.24, 54% de capital propio y casi nada de deuda sin arrendamientos (0.2x EBITDA).',
+      'Chedraui gana en la operación: crece +4.8%, rota su inventario 10 veces al año y su ciclo de efectivo es negativo (−10 días).',
+      'La oportunidad de Soriana: usar esa solidez para mover el inventario más rápido y volver a crecer.'
     ],
     lema: 'Un balance fuerte es el punto de partida; la operación, la tarea pendiente.',
     nota: 'Datos tomados de los archivos del equipo (descargados de Perplexity); difieren un poco de lo reportado (ej. utilidad neta 2025 de Soriana: 3,307 vs 3,334 reportada). El margen bruto de los archivos no coincide con el reportado (Soriana reporta ~24%). Donde dice "criterio general" no hay una fuente específica: son rangos de uso común en análisis financiero.',

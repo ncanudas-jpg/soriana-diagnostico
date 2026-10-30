@@ -146,36 +146,64 @@
   }
 
   /* ---------- PESTEL ---------- */
-  function renderPestel() {
-    $('#pestel').innerHTML = D.pestel.map((p, i) => `
-      <article class="pcard">
-        <h3><button class="pcard-top" type="button" aria-expanded="false" aria-controls="pb-${i}">
-          <span class="pletter" aria-hidden="true">${esc(p.letra)}</span><span class="pname">${esc(p.factor)}</span><span class="pchev" aria-hidden="true">+</span></button></h3>
-        <div class="pbody" id="pb-${i}" role="region" aria-label="${esc(p.factor)}"><div><div class="pbody-in">
-          <div><h4>Situación relevante</h4><p>${esc(p.situacion)}</p></div>
-          <div><h4>Impacto para Soriana</h4><p>${esc(p.impacto)}</p></div>
-        </div></div></div>
-      </article>`).join('');
-    $('#pestel').addEventListener('click', (e) => {
-      const b = e.target.closest('.pcard-top'); if (!b) return;
-      const open = b.getAttribute('aria-expanded') !== 'true';
-      b.setAttribute('aria-expanded', open);
-      b.closest('.pcard').classList.toggle('open', open);
+  /* ---------- FODA ---------- */
+  /* ---------- pestañas genéricas (paneles con data-pane) ---------- */
+  function initTabset(el, defs, onSelect) {
+    const list = document.createElement('div');
+    list.className = 'tablist'; list.setAttribute('role', 'tablist');
+    list.innerHTML = defs.map((d, i) => `<button type="button" role="tab" id="${el.id}-t-${d.id}" aria-controls="${el.id}-p-${d.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}">${esc(d.label)}</button>`).join('');
+    el.prepend(list);
+    const panes = defs.map((d, i) => {
+      const p = $(`[data-pane="${d.id}"]`, el);
+      p.id = `${el.id}-p-${d.id}`; p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', `${el.id}-t-${d.id}`); p.hidden = i !== 0;
+      return p;
+    });
+    const tabs = $$('[role=tab]', list);
+    const select = (i, focus) => {
+      tabs.forEach((b, k) => { b.setAttribute('aria-selected', k === i); b.tabIndex = k === i ? 0 : -1; });
+      panes.forEach((p, k) => { p.hidden = k !== i; });
+      if (focus) tabs[i].focus();
+      if (onSelect) onSelect(defs[i].id, panes[i]);
+      requestAnimationFrame(() => ensureCharts(panes[i]));
+    };
+    list.addEventListener('click', (e) => { const b = e.target.closest('[role=tab]'); if (b) select(+b.dataset.i); });
+    list.addEventListener('keydown', (e) => {
+      const cur = tabs.findIndex((b) => b.getAttribute('aria-selected') === 'true');
+      const n = e.key === 'ArrowRight' ? (cur + 1) % tabs.length : e.key === 'ArrowLeft' ? (cur - 1 + tabs.length) % tabs.length : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
+      if (n !== null) { e.preventDefault(); select(n, true); }
+    });
+    return select;
+  }
+
+  /* ---------- Diagnóstico: PESTEL + FODA, el detalle aparece al tocar ---------- */
+  function renderDiag() {
+    const box = $('#diag');
+    const FC = { F: ['#006C32', '#fff'], O: ['#B6BF00', '#1d1d1f'], D: ['#E4002B', '#fff'], A: ['#9d001f', '#fff'] };
+    const chip = (g, i, letra, nombre, col, on) => `<button type="button" class="dchip" data-g="${g}" data-i="${i}" aria-pressed="false" style="--c:${col};--on:${on}"><span class="l" aria-hidden="true">${esc(letra)}</span><span>${esc(nombre)}</span></button>`;
+    box.innerHTML = `<div class="diag-groups">
+      <div class="dgroup"><h3><b>PESTEL</b> · el entorno</h3><div class="dchips">${D.pestel.map((p, i) => chip('p', i, p.letra, p.factor, '#006C32', '#fff')).join('')}</div></div>
+      <div class="dgroup foda"><h3><b>FODA</b> · por dentro y por fuera</h3><div class="dchips">${D.foda.map((f, i) => chip('f', i, f.letra, f.nombre, FC[f.letra][0], FC[f.letra][1])).join('')}</div></div>
+    </div><div class="card diag-panel" aria-live="polite"><p class="hint">👆 Toca cualquier letra y aquí aparece el detalle. Nada de leer muros de texto.</p></div>`;
+    const panel = $('.diag-panel', box);
+    box.addEventListener('click', (e) => {
+      const b = e.target.closest('.dchip'); if (!b) return;
+      const i = +b.dataset.i, g = b.dataset.g;
+      $$('.dchip', box).forEach((x) => x.setAttribute('aria-pressed', x === b));
+      panel.style.setProperty('--c', b.style.getPropertyValue('--c'));
+      if (g === 'p') {
+        const p = D.pestel[i];
+        panel.innerHTML = `<h3>${esc(p.factor)}</h3><div class="cols"><div><h4>Qué está pasando</h4><p>${esc(p.situacion)}</p></div><div><h4>Qué significa para Soriana</h4><p>${esc(p.impacto)}</p></div></div>`;
+      } else {
+        const f = D.foda[i];
+        panel.innerHTML = `<h3>${esc(f.nombre)}</h3><ul>${f.items.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`;
+      }
     });
   }
 
-  /* ---------- FODA ---------- */
-  function renderFoda() {
-    const box = $('#foda');
-    box.innerHTML = `<div class="foda-quad" role="group" aria-label="Cuadrante FODA">${D.foda.map((f, i) => `<button class="fq" type="button" data-i="${i}" data-tipo="${f.tipo}" aria-pressed="${i === 0}"><span class="big" aria-hidden="true">${esc(f.letra)}</span><span class="nm">${esc(f.nombre)}</span></button>`).join('')}</div><div class="card foda-panel" aria-live="polite"></div>`;
-    const panel = $('.foda-panel', box);
-    const sel = (i) => {
-      const f = D.foda[i];
-      $$('.fq', box).forEach((b, k) => b.setAttribute('aria-pressed', k === i));
-      panel.innerHTML = `<h3>${esc(f.nombre)}</h3><ul>${f.items.map((t, k) => `<li style="--i:${k}">${esc(t)}</li>`).join('')}</ul>`;
-    };
-    sel(0);
-    box.addEventListener('click', (e) => { const b = e.target.closest('.fq'); if (b) sel(+b.dataset.i); });
+  /* ---------- Modelo: Canvas + Tendencias en pestañas ---------- */
+  function renderModelo() {
+    renderCanvas(); renderCarousel();
+    initTabset($('#modeloTabs'), D.ui.modeloTabs);
   }
 
   /* ---------- Carrusel ---------- */
@@ -209,17 +237,6 @@
       if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
     });
     dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
-  }
-
-  function renderCompetidores() {
-    const box = $('#competidores');
-    box.innerHTML = D.competidores.map((c) => `<article class="card lift comp" style="--c:${c.color}"><div class="comp-top"><span class="tk">BMV: ${esc(c.ticker)}</span><span class="comp-logo"></span></div><div><h3>${esc(c.nombre)}</h3><p>${esc(c.nota)}</p></div></article>`).join('');
-    $$('.comp-logo', box).forEach((slot, i) => {
-      const src = D.competidores[i].logo; if (!src) return;
-      const img = new Image(); img.alt = D.competidores[i].nombre;
-      img.onload = () => slot.appendChild(img);
-      img.src = src;
-    });
   }
 
   /* ==========================================================================
@@ -282,6 +299,7 @@
   }
   function ensureCharts(scope) {
     $$('canvas', scope).forEach((cv) => {
+      if (!cv.offsetParent) return; // oculto en una pestaña
       for (const [key, r] of charts) if (r.canvas === cv) { if (!r.chart) buildChart(key); else r.chart.resize(); }
     });
   }
@@ -320,43 +338,26 @@
     return { type: 'bar', data: { labels, datasets }, options };
   }
 
-  function renderChapters() {
-    const host = $('[data-chapters]');
-    host.innerHTML = D.capitulos.map((ch) => `
-      <div class="slide" data-slide="q-${ch.id}">
-        <header class="slide-head reveal"><p class="kicker">${esc(ch.head.k)}</p><h2 class="h2">${esc(ch.head.t)}</h2><p class="sub">${esc(ch.head.s)}</p></header>
-        <div class="chapter-wrap reveal">
-          <div class="chapter-text">
-            ${ch.vistas.length > 1 ? `<div class="chips" role="group" aria-label="Vista de la gráfica">${ch.vistas.map((v, i) => `<button type="button" class="chip" aria-pressed="${i === 0}" data-i="${i}">${esc(v.label)}</button>`).join('')}</div>` : ''}
-            <div class="lectura" aria-live="polite"><b>Lectura</b><span></span></div>
-            ${ch.id === 'ingresos' ? q2Callout() : ''}
-          </div>
-          <figure class="card chart-card"><figcaption><strong class="vlabel"></strong> · mdp o % según la vista</figcaption><div class="chart-box"><canvas role="img"></canvas></div></figure>
-        </div>
-      </div>`).join('');
-
-    $$('.slide', host).forEach((slide, ci) => {
-      const ch = D.capitulos[ci];
-      const cv = $('canvas', slide);
-      let cur = 0;
-      const key = `ch-${ch.id}`;
-      const paintText = () => {
-        const v = ch.vistas[cur];
-        $('.lectura span', slide).textContent = v.lectura;
-        $('.vlabel', slide).textContent = `${ch.head.t.replace('.', '')} — ${v.label}`;
-        $('figcaption', slide).lastChild.textContent = ` · ${unitLabel(v)}`;
-        cv.setAttribute('aria-label', `Gráfica de ${v.label}, Soriana frente a Chedraui. ${v.lectura}`);
-      };
-      paintText();
-      registerChart(key, cv, () => chapterConfig(ch.vistas[cur]));
-      $$('.chip', slide).forEach((b) => b.addEventListener('click', () => {
-        cur = +b.dataset.i;
-        $$('.chip', slide).forEach((x) => x.setAttribute('aria-pressed', x === b));
-        paintText();
-        refreshChart(key);
-        if (!charts.get(key).chart) buildChart(key);
-      }));
-    });
+  function renderFinanzas() {
+    const temas = D.capitulos, st = { ch: 0, v: 0 };
+    const cv = $('#finChart');
+    const view = () => temas[st.ch].vistas[st.v];
+    $('#finTemas').innerHTML = temas.map((c, i) => `<button type="button" class="chip" data-i="${i}" aria-pressed="${i === 0}">${esc(c.head.t.replace(/\.$/, ''))}</button>`).join('');
+    const paint = () => {
+      const ch = temas[st.ch], v = view();
+      $$('#finTemas .chip').forEach((b, k) => b.setAttribute('aria-pressed', k === st.ch));
+      $('#finVistas').innerHTML = ch.vistas.length > 1 ? ch.vistas.map((x, k) => `<button type="button" class="chip" data-v="${k}" aria-pressed="${k === st.v}">${esc(x.label)}</button>`).join('') : '';
+      $('#finLectura').textContent = v.lectura;
+      $('#finLabel').textContent = `${ch.head.t.replace(/\.$/, '')} — ${v.label}`;
+      $('#finUnit').textContent = `· ${unitLabel(v)}`;
+      $('#finExtra').innerHTML = ch.id === 'ingresos' ? q2Callout() : '';
+      cv.setAttribute('aria-label', `Gráfica de ${v.label}, Soriana frente a Chedraui. ${v.lectura}`);
+    };
+    paint();
+    registerChart('fin', cv, () => chapterConfig(view()));
+    const redraw = () => { paint(); refreshChart('fin'); if (!charts.get('fin').chart) buildChart('fin'); };
+    $('#finTemas').addEventListener('click', (e) => { const b = e.target.closest('[data-i]'); if (b) { st.ch = +b.dataset.i; st.v = 0; redraw(); } });
+    $('#finVistas').addEventListener('click', (e) => { const b = e.target.closest('[data-v]'); if (b) { st.v = +b.dataset.v; redraw(); } });
   }
   function unitLabel(v) {
     if (v.tipo === 'base') return 'millones de pesos (mdp)';
@@ -383,7 +384,7 @@
   };
 
   function renderControls() {
-    $$('[data-ctl]').forEach((n, k) => {
+    [$('#dueloCtl')].forEach((n) => {
       n.innerHTML = `<div class="seg" role="radiogroup" aria-label="Año">${YEARS.map((y, i) => `<button type="button" role="radio" data-yi="${i}" aria-checked="${i === cmp.yi}">${y}</button>`).join('')}</div>
         <label class="switch"><input type="checkbox" data-ref ${cmp.ref ? 'checked' : ''}><span class="tr" aria-hidden="true"></span><span>Referencia de industria <span class="muted">(Walmex / Damodaran)</span></span></label>`;
       n.addEventListener('click', (e) => { const b = e.target.closest('[data-yi]'); if (b) { cmp.yi = +b.dataset.yi; syncCmp(); } });
@@ -405,8 +406,8 @@
     });
     $('#ratioTable').innerHTML = html + '</tbody>';
     const total = ws + wc;
-    $('#verdict').innerHTML = `<span class="vbadge"><i style="--c:var(--chedraui)"></i>Chedraui <b>${wc}</b> de ${total}</span><span class="vbadge"><i style="--c:var(--soriana)"></i>Soriana <b>${ws}</b> de ${total}</span><span class="muted" style="font-size:.85rem">${yi === 1 ? esc(D.comparacionNotas.resultado2025) + ' ' : ''}${esc(D.comparacionNotas.capitalTrabajo)}</span>`;
-    $('#cmpFoot').textContent = `${D.comparacionNotas.datos} ⚠ Margen bruto: pasa el cursor o enfoca el aviso para leer la advertencia; compara mejor en margen operativo y EBITDA.`;
+    cmp.score = { ws, wc, total };
+    $('#cmpFoot').textContent = `${yi === 1 ? D.comparacionNotas.resultado2025 + ' ' : ''}${D.comparacionNotas.capitalTrabajo} ${D.comparacionNotas.datos} ⚠ Margen bruto: pasa el cursor o enfoca el aviso para leer la advertencia; compara mejor en margen operativo y EBITDA.`;
   }
 
   function radarConfig() {
@@ -469,16 +470,63 @@
   }
 
   function syncCmp() {
-    $$('[data-ctl] [data-yi]').forEach((b) => b.setAttribute('aria-checked', +b.dataset.yi === cmp.yi));
-    $$('[data-ctl] [data-ref]').forEach((i) => (i.checked = cmp.ref));
-    $('#comparacion').classList.toggle('show-ref', cmp.ref);
+    $$('#dueloCtl [data-yi]').forEach((b) => b.setAttribute('aria-checked', +b.dataset.yi === cmp.yi));
+    $$('#dueloCtl [data-ref]').forEach((i) => (i.checked = cmp.ref));
+    $('#duelo').classList.toggle('show-ref', cmp.ref);
     renderTable();
+    paintVs();
     refreshChart('radar'); refreshChart('bars');
     paintSlider(true);
   }
 
+  /* ---------- marcador del duelo ---------- */
+  function renderVs() {
+    const l = (n) => D.logos.find((x) => x.nombre === n) || {};
+    const tile = (x) => `<span class="tile">${x.archivo ? `<img src="${esc(x.archivo)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${esc((x.nombre || '?')[0])}'}))">` : `<span>${esc((x.nombre || '?')[0])}</span>`}</span>`;
+    $('#vsBoard').innerHTML = `
+      <div class="vs-side s" id="vsSide-s">${tile(l('Soriana'))}<div><div class="nm">Soriana</div><div class="num" id="vsS">0</div><div class="lbl" id="vsSl"></div></div></div>
+      <div class="vs-mid" aria-hidden="true">VS</div>
+      <div class="vs-side c" id="vsSide-c">${tile(l('Chedraui'))}<div><div class="nm">Chedraui</div><div class="num" id="vsC">0</div><div class="lbl" id="vsCl"></div></div></div>
+      <p class="vs-note">${esc(D.rival.nota)} Conteo de razones donde cada una está mejor posicionada.</p>`;
+  }
+  function paintVs() {
+    const sc = cmp.score; if (!sc) return;
+    tween($('#vsS'), sc.ws, (v) => String(Math.round(v)), 700);
+    tween($('#vsC'), sc.wc, (v) => String(Math.round(v)), 700);
+    $('#vsSl').textContent = `de ${sc.total} razones · ${YEARS[cmp.yi]}`; $('#vsCl').textContent = `de ${sc.total} razones · ${YEARS[cmp.yi]}`;
+    $('#vsSide-s').classList.toggle('win', sc.ws > sc.wc); $('#vsSide-c').classList.toggle('win', sc.wc > sc.ws);
+  }
+
+  /* ---------- juego: ¿quién gana? ---------- */
+  function renderQuiz() {
+    const box = $('#quiz'), J = D.ui.juego, yi = YEARS.indexOf(J.anio), qs = J.ids.map(R);
+    let i = 0, score = 0;
+    const draw = () => {
+      if (i >= qs.length) {
+        const msg = score >= 5 ? '¡Ya piensas como analista financiero!' : score >= 3 ? 'Nada mal: la competencia está cerrada.' : 'Chedraui sorprende… repasa la tabla y vuelve a intentar.';
+        box.innerHTML = `<span class="q-n">Resultado</span><div class="q-score">${score}/${qs.length}</div><p class="q-t">${msg}</p><button type="button" class="pill-btn solid" data-act="again">Jugar otra vez</button>`;
+        return;
+      }
+      const r = qs[i];
+      box.innerHTML = `<span class="q-n">Pregunta ${i + 1} de ${qs.length}</span><h3 class="q-t">¿Quién está mejor posicionada en ${esc(r.nombre)}?</h3><p class="q-h">${r.better === 'high' ? 'Más es mejor' : 'Menos es mejor'} · cifras ${J.anio}</p>
+        <div class="q-opts"><button type="button" class="q-btn" style="--c:#E4002B" data-pick="s">Soriana</button><button type="button" class="q-btn" style="--c:#F28C00" data-pick="c">Chedraui</button></div><div class="q-res" aria-live="polite"></div>`;
+    };
+    box.addEventListener('click', (e) => {
+      if (e.target.closest('[data-act=again]')) { i = 0; score = 0; draw(); return; }
+      if (e.target.closest('[data-act=next]')) { i++; draw(); return; }
+      const b = e.target.closest('[data-pick]'); if (!b || b.disabled) return;
+      const r = qs[i], win = winner(r, yi), ok = b.dataset.pick === win, d = decOf(r);
+      if (ok) score++;
+      $$('.q-btn', box).forEach((x) => { x.disabled = true; if (x === b) x.classList.add('picked'); });
+      $('.q-res', box).className = `q-res ${ok ? 'ok' : 'no'}`;
+      $('.q-res', box).innerHTML = `<b>${ok ? '¡Le atinaste! 🎯' : 'Uy, casi. 😅'}</b><p>Soriana ${fv(r.s[yi], r.unit, d)} · Chedraui ${fv(r.c[yi], r.unit, d)}. Gana ${win === 's' ? 'Soriana' : 'Chedraui'}.</p><button type="button" class="pill-btn solid" data-act="next">${i + 1 < qs.length ? 'Siguiente' : 'Ver resultado'}</button>`;
+    });
+    draw();
+  }
+
   function renderComparacion() {
     renderControls();
+    renderVs();
     const sel = $('#barGroup');
     sel.innerHTML = D.gruposBarras.map((g) => `<option value="${g.id}">${esc(g.nombre)}</option>`).join('');
     $('#barChart').closest('figure').insertAdjacentHTML('beforeend', '<p class="chart-note" id="barNote"></p>');
@@ -488,11 +536,14 @@
     sel.addEventListener('change', () => { refreshChart('bars'); });
     renderTable();
     renderSlider();
+    renderQuiz();
+    const select = initTabset($('#dueloTabs'), D.ui.dueloTabs);
     $('#ratioTable').addEventListener('click', (e) => {
       const b = e.target.closest('.rowlink'); if (!b) return;
       cmp.id = b.dataset.id; $('#cmpSel').value = cmp.id; paintSlider(true);
-      goToSlide('comparacion-slider');
+      select(3);
     });
+    paintVs();
   }
 
   /* ==========================================================================
@@ -578,15 +629,29 @@
   /* ==========================================================================
      PROPUESTA
      ========================================================================== */
+  function accCards(items, ok, prefix) {
+    return items.map((p, i) => `<article class="pcard"><h3><button class="pcard-top" type="button" aria-expanded="false" aria-controls="${prefix}-${i}"><span class="pletter${ok ? ' ok' : ''}" aria-hidden="true">${i + 1}</span><span class="pname">${esc(p.t)}</span><span class="pchev" aria-hidden="true">+</span></button></h3>
+      <div class="pbody" id="${prefix}-${i}" role="region" aria-label="${esc(p.t)}"><div><div class="pbody-in"><p>${esc(p.d)}</p>${p.acciones && p.acciones.length ? `<div><h4>Qué hacer</h4><ul class="acts">${p.acciones.map((a) => `<li>${esc(a)}</li>`).join('')}</ul></div>` : ''}</div></div></div></article>`).join('');
+  }
+  function bindAcc(box) {
+    box.addEventListener('click', (e) => {
+      const b = e.target.closest('.pcard-top'); if (!b) return;
+      const open = b.getAttribute('aria-expanded') !== 'true';
+      b.setAttribute('aria-expanded', open);
+      b.closest('.pcard').classList.toggle('open', open);
+    });
+  }
   function renderPropuesta() {
-    $('#propBien').innerHTML = D.propuesta.bien.map((p, i) => `<article class="card lift pc"><span class="no">0${i + 1}</span><h3>${esc(p.t)}</h3><p>${esc(p.d)}</p></article>`).join('');
-    $('#propMejora').innerHTML = D.propuesta.mejora.map((p, i) => `<article class="card lift pc"><span class="no">0${i + 1}</span><h3>${esc(p.t)}</h3><p>${esc(p.d)}</p>${p.acciones.length ? `<ul>${p.acciones.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>` : ''}</article>`).join('');
+    $('#propBien').innerHTML = accCards(D.propuesta.bien, true, 'pb');
+    $('#propMejora').innerHTML = accCards(D.propuesta.mejora, false, 'pm');
+    bindAcc($('#propBien')); bindAcc($('#propMejora'));
     $('#timeline').innerHTML = D.propuesta.roadmap.map((e) => `<li><span class="when">${esc(e.rango)}</span><h3>${esc(e.titulo)}</h3><ul>${e.items.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></li>`).join('');
     $('#metaTable').innerHTML = `<thead><tr><th scope="col">KPI</th><th scope="col">Hoy</th><th scope="col">Meta ilustrativa</th><th scope="col">Cambio</th></tr></thead><tbody>${D.propuesta.kpis.map((k) => {
       const d = k.meta - k.actual, u = k.unit === 'pct' ? '%' : ' d', sign = d > 0 ? '+' : d < 0 ? '−' : '';
       return `<tr><td>${esc(k.nombre)}</td><td>${fmt(k.actual, k.dec)}${u}</td><td class="meta">${fmt(k.meta, k.dec)}${u}</td><td>${sign}${fmt(Math.abs(d), k.dec)}${k.unit === 'pct' ? ' pp' : ' d'}</td></tr>`;
     }).join('')}</tbody>`;
     $('#metaFoot').textContent = D.propuesta.metasNota;
+    initTabset($('#propTabs'), D.ui.propTabs);
     renderSim();
   }
 
@@ -671,7 +736,7 @@
       e.target.classList.add('in');
       runCounters(e.target);
       io.unobserve(e.target);
-    }), { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    }), { threshold: 0.01, rootMargin: '0px 0px -8% 0px' });
     $$('.reveal').forEach((n) => io.observe(n));
   }
 
@@ -782,9 +847,9 @@
 
   /* ---------- arranque ---------- */
   function init() {
-    renderNav(); renderHero(); renderHeads(); renderPerfil(); renderPestel(); renderFoda(); renderCarousel(); renderCanvas(); renderCompetidores();
+    renderNav(); renderHero(); renderHeads(); renderPerfil(); renderDiag(); renderModelo();
     themeChart();
-    renderChapters(); renderComparacion(); renderDashControls(); paintDash(); renderPropuesta(); renderCierre();
+    renderFinanzas(); renderComparacion(); renderDashControls(); paintDash(); renderPropuesta(); renderCierre();
     setupTheme(); setupPresentation(); setupScroll();
   }
   init();

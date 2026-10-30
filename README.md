@@ -1,6 +1,7 @@
 # Soriana. Diagnóstico y estrategia.
 
-Sitio de presentación (estático, sin build) sobre Organización Soriana (BMV: SORIANAB) frente a Chedraui.
+Sitio de presentación (estático, sin build) sobre Organización Soriana (BMV: SORIANAB), con Chedraui como único rival.
+Diez diapositivas interactivas; el detalle de PESTEL, FODA y propuesta aparece al tocar.
 
 ## Estructura
 - `index.html` — esqueleto de las secciones
@@ -13,7 +14,8 @@ Sitio de presentación (estático, sin build) sobre Organización Soriana (BMV: 
 - **Autores, materia, profesor:** `SITE.meta` (materia, profesor e institución quedan vacíos; si los llenas, aparecen solos) en `js/data.js`.
 - **Cifras y razones:** `SITE.base` (estados financieros) y `SITE.razones` (tabla de 20 razones, `[2024, 2025]`).
 - **Metas del simulador y de la tabla de KPI:** `SITE.propuesta`.
-- **Logos:** están en `assets/` y se configuran en `SITE.logos` (`archivo`, `principal` para el protagonista, `alto` en px). Si el archivo falta o no carga, se muestra el nombre en texto.
+- **Logos:** están en `assets/` (Soriana y Chedraui) y se configuran en `SITE.logos` (`archivo`, `principal`, `alto`). Si el archivo falta o no carga, se muestra el nombre en texto.
+- **Pestañas, juego y textos de interfaz:** `SITE.ui`. Encabezados de cada diapositiva: `SITE.heads`.
 
 ## Modo presentación
 Botón **Presentar** o tecla **P**. Flechas / espacio / clic para avanzar, **Shift+espacio** retrocede, **F** pantalla completa, **Esc** sale.
