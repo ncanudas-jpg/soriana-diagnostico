@@ -913,10 +913,12 @@
 
   /* ---------- arranque ---------- */
   function init() {
-    renderNav(); renderHero(); renderHeads(); renderPerfil(); renderDiag(); renderModelo();
-    themeChart();
-    renderFinanzas(); renderComparacion(); renderDashboard(); renderPropuesta(); renderCierre();
-    setupTheme(); setupPresentation(); setupScroll();
+    // cada paso va aislado: si uno falla, el resto del sitio sigue funcionando
+    const steps = [renderNav, renderHero, renderHeads, renderPerfil, renderDiag, renderModelo, themeChart, renderFinanzas, renderComparacion, renderDashboard, renderPropuesta, renderCierre, setupTheme, setupPresentation, setupScroll];
+    let ok = true;
+    steps.forEach((fn) => { try { fn(); } catch (e) { ok = false; console.error(`Falló ${fn.name}:`, e); } });
+    if (!ok) root.classList.add('no-reveal');
+    window.__ready = true;
   }
   init();
 })();

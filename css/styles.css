@@ -605,3 +605,6 @@ body.presenting .carousel-wrap { margin: 0 calc(-1 * max(20px, (100vw - 1240px) 
 .dk .val { font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 800; letter-spacing: -.035em; line-height: 1; font-variant-numeric: tabular-nums; }
 .dk h3 { font-size: .95rem; font-weight: 600; color: var(--text-2); letter-spacing: -.01em; }
 .dcard .chart-box.fill { flex: 1 1 auto; height: auto; min-height: 250px; }
+
+/* red de seguridad: contenido siempre visible si el JS falla */
+.no-reveal .reveal, .no-reveal.js .reveal { opacity: 1 !important; transform: none !important; }
